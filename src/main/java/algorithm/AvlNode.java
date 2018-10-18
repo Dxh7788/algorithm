@@ -1,6 +1,6 @@
 package algorithm;
 
-/*-----------红黑树--------------*/
+/*-----------AVL树--------------*/
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,22 +8,21 @@ import java.util.List;
 /**
  * @author dongxiaohong on 2018/10/16 11:32
  */
-public class TreeNode extends Node{
+public class AvlNode extends Node{
     //red-black tree links
-    TreeNode parent;
-    TreeNode left;
-    TreeNode right;
+    AvlNode parent;
+    AvlNode left;
+    AvlNode right;
     // needed to unlink next upon deletion
-    TreeNode prev;
-    boolean red;
+    AvlNode prev;
 
-    public TreeNode(Integer value, Node next) {
+    public AvlNode(Integer value, Node next) {
         super(value, next);
     }
 
     //返回根 root
-    final TreeNode root(){
-        for (TreeNode r = this, p;;){
+    final AvlNode root(){
+        for (AvlNode r = this, p;;){
             if ((p=r.parent)==null){
                 return p;
             }
@@ -34,13 +33,13 @@ public class TreeNode extends Node{
      * 想要构建二叉树首先要构建一个链表
      * 数组转链表
      * */
-    static TreeNode replacementTreeNode(Integer[] args){
+    static AvlNode replacementTreeNode(Integer[] args){
         if (args == null || args.length==0){
             return null;
         }
-        TreeNode hd=null,tl=null;
+        AvlNode hd=null,tl=null;
         for (Integer ir : args){
-            TreeNode p = treeNodefy(ir, null);
+            AvlNode p = treeNodefy(ir, null);
             if (tl == null){
                 hd = p;
             }else {
@@ -52,8 +51,8 @@ public class TreeNode extends Node{
         return hd;
     }
 
-    private static TreeNode treeNodefy(Integer value, TreeNode next) {
-        return new TreeNode(value,next);
+    private static AvlNode treeNodefy(Integer value, AvlNode next) {
+        return new AvlNode(value,next);
     }
 
     /**
@@ -62,10 +61,10 @@ public class TreeNode extends Node{
      *  第一阶段就---每次都要平衡一下
      *  第二阶段就---每次失衡了再平衡
      */
-    static TreeNode treeify(TreeNode that){
-        TreeNode root = null;
-        for(TreeNode x = that, next;x!=null;x= next){
-            next = (TreeNode)x.next;
+    static AvlNode treeify(AvlNode that){
+        AvlNode root = null;
+        for(AvlNode x = that, next; x!=null; x= next){
+            next = (AvlNode)x.next;
             x.left = x.right = null;
             if (root == null){
                 x.parent = null;
@@ -74,7 +73,7 @@ public class TreeNode extends Node{
                 int value = x.value;
                 int pv,dir;
                 //遍历root
-                for (TreeNode p = root;;){
+                for (AvlNode p = root;;){
                     //加左树
                     if ((pv = p.value) > value){
                         dir = -1;
@@ -85,7 +84,7 @@ public class TreeNode extends Node{
                     else {
                        dir = 0;
                     }
-                    TreeNode xp = p;
+                    AvlNode xp = p;
                     if ((p = (dir <= 0) ? p.left:p.right)==null){
                         x.parent = xp;
                         if (dir <= 0){
@@ -107,8 +106,8 @@ public class TreeNode extends Node{
      * 左平衡,负责左树的平衡.先进行次级根树的左旋转,然后对根节点进行右旋转
      * @param root
      * */
-    public TreeNode leftBalance(TreeNode root){
-        TreeNode sRoot = root.left;
+    public AvlNode leftBalance(AvlNode root){
+        AvlNode sRoot = root.left;
         sRoot = leftRotate(sRoot);
         root.left = sRoot;
         sRoot.parent = root;
@@ -120,8 +119,8 @@ public class TreeNode extends Node{
      * 右平衡,负责右树的平衡,先进行次级根树的右旋转,然后对根节点进行左旋转
      * @param root
      * */
-    public TreeNode rightBalance(TreeNode root){
-        TreeNode sRoot = root.right;
+    public AvlNode rightBalance(AvlNode root){
+        AvlNode sRoot = root.right;
         sRoot = rightRotate(sRoot);
         root.right = sRoot;
         sRoot.parent = root;
@@ -133,8 +132,8 @@ public class TreeNode extends Node{
      * 需要进行旋转的最小树,进行右旋转
      * @param root
      * */
-    public static TreeNode rightRotate(TreeNode root){
-        TreeNode x = root,xp=root,xl=x.left;
+    public static AvlNode rightRotate(AvlNode root){
+        AvlNode x = root,xp=root,xl=x.left;
         if (xl.right!=null){
             xp.left = xl.right;
             xl.right = xp;
@@ -146,8 +145,8 @@ public class TreeNode extends Node{
      * 需要进行旋转的最小树,进行左旋转
      * @param root
      * */
-    public static TreeNode leftRotate(TreeNode root){
-        TreeNode x = root, xp = root, xr = x.right;
+    public static AvlNode leftRotate(AvlNode root){
+        AvlNode x = root, xp = root, xr = x.right;
         if (xr.left!=null){
             xp.right = xr.left;
             xr.left = xp;
@@ -159,7 +158,7 @@ public class TreeNode extends Node{
      * 计算树的深度
      * 无论左子树还是右子树只要能走下去就多一层
      * */
-    public static int deepth(TreeNode root){
+    public static int deepth(AvlNode root){
         if (root==null){
             return 0;
         }
@@ -178,7 +177,7 @@ public class TreeNode extends Node{
      * 如果执行单左旋或者单右旋时,只需要执行leftRotate和rightRotate.
      * 如果是另外两种情况就需要找到最大旋转单元
      * */
-    static TreeNode balancify(TreeNode root,TreeNode xp){
+    static AvlNode balancify(AvlNode root, AvlNode xp){
         //检查root的左右树差
         if (root == null || xp == null){
             return null;
@@ -188,7 +187,7 @@ public class TreeNode extends Node{
         //失去平衡
         if (Math.abs(ld-rd) == 2 ){
             //确定节点插入性质
-            TreeNode xpp = xp.parent;
+            AvlNode xpp = xp.parent;
             if (ld > rd){
                 //根节点的左子树添加
                 if (xpp.left == xp){
@@ -196,8 +195,8 @@ public class TreeNode extends Node{
                     return rightRotate(root);
                 }else if (xpp.right == xp){
                     //先对xpp左旋,再对root右旋
-                    TreeNode xppr = xpp;
-                    TreeNode nRoot = leftRotate(xpp);
+                    AvlNode xppr = xpp;
+                    AvlNode nRoot = leftRotate(xpp);
                     xppr.right = nRoot;
                     return rightRotate(root);
                 }
@@ -207,8 +206,8 @@ public class TreeNode extends Node{
                      return leftRotate(root);
                  }else if (xpp.left == xp){
                      //先对xpp右旋,再对root左旋
-                     TreeNode xppl = xpp;
-                     TreeNode nRoot = rightRotate(xpp);
+                     AvlNode xppl = xpp;
+                     AvlNode nRoot = rightRotate(xpp);
                      xppl.left = nRoot;
                      return leftRotate(root);
                 }
@@ -221,7 +220,7 @@ public class TreeNode extends Node{
     /**
      * 中序输出
      * */
-    public static List<Integer> middle(TreeNode root,List<Integer> values){
+    public static List<Integer> middle(AvlNode root, List<Integer> values){
         if (root.left==null && root.right ==null){
             values.add(root.value);
             return values;
@@ -238,7 +237,7 @@ public class TreeNode extends Node{
     /**
      * 后序输出
      * */
-    public static List<Integer> back(TreeNode root,List<Integer> values){
+    public static List<Integer> back(AvlNode root, List<Integer> values){
         if (root.left==null && root.right ==null){
             values.add(root.value);
             return values;
@@ -255,7 +254,7 @@ public class TreeNode extends Node{
     /**
      * 后序输出
      * */
-    public static List<Integer> front(TreeNode root,List<Integer> values){
+    public static List<Integer> front(AvlNode root, List<Integer> values){
         if (root.left==null && root.right ==null){
             values.add(root.value);
             return values;
@@ -271,8 +270,8 @@ public class TreeNode extends Node{
     }
     public static void main(String[] sargs) {
         Integer[] args = new Integer[]{80,60,90,83,95,93,97,100,70};
-        TreeNode that = TreeNode.replacementTreeNode(args);
-        TreeNode result = TreeNode.treeify(that);
+        AvlNode that = AvlNode.replacementTreeNode(args);
+        AvlNode result = AvlNode.treeify(that);
         //前序查询
         List<Integer> values = new ArrayList<Integer>();
         //前序输出
