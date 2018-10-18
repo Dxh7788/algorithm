@@ -15,9 +15,11 @@ public class AvlNode extends Node{
     AvlNode right;
     // needed to unlink next upon deletion
     AvlNode prev;
+    boolean red;
 
     public AvlNode(Integer value, Node next) {
-        super(value, next);
+        super(value,next);
+        this.value = value;
     }
 
     //返回根 root
