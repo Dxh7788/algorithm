@@ -8,17 +8,14 @@ import java.util.List;
 /**
  * @author dongxiaohong on 2018/10/16 11:32
  */
-public class AvlNode extends Node{
+public class AvlNode{
     //red-black tree links
     AvlNode parent;
     AvlNode left;
     AvlNode right;
-    // needed to unlink next upon deletion
-    AvlNode prev;
-    boolean red;
+    Integer value;
 
-    public AvlNode(Integer value, Node next) {
-        super(value,next);
+    public AvlNode(Integer value) {
         this.value = value;
     }
 
@@ -41,20 +38,20 @@ public class AvlNode extends Node{
         }
         AvlNode hd=null,tl=null;
         for (Integer ir : args){
-            AvlNode p = treeNodefy(ir, null);
+            AvlNode p = newAvlNode(ir, null);
             if (tl == null){
                 hd = p;
             }else {
-                p.prev = tl;
-                tl.next = p;
+                //p.prev = tl;
+                //tl.next = p;
             }
             tl = p;
         }
         return hd;
     }
 
-    private static AvlNode treeNodefy(Integer value, AvlNode next) {
-        return new AvlNode(value,next);
+    private static AvlNode newAvlNode(Integer value, AvlNode next) {
+        return new AvlNode(value);
     }
 
     /**
@@ -63,7 +60,7 @@ public class AvlNode extends Node{
      *  第一阶段就---每次都要平衡一下
      *  第二阶段就---每次失衡了再平衡
      */
-    static AvlNode treeify(AvlNode that){
+    /*static AvlNode treeify(AvlNode that){
         AvlNode root = null;
         for(AvlNode x = that, next; x!=null; x= next){
             next = (AvlNode)x.next;
@@ -102,34 +99,7 @@ public class AvlNode extends Node{
             }
         }
         return root;
-    }
-
-    /**
-     * 左平衡,负责左树的平衡.先进行次级根树的左旋转,然后对根节点进行右旋转
-     * @param root
-     * */
-    public AvlNode leftBalance(AvlNode root){
-        AvlNode sRoot = root.left;
-        sRoot = leftRotate(sRoot);
-        root.left = sRoot;
-        sRoot.parent = root;
-        //对root进行左旋转
-        root = rightRotate(root);
-        return root;
-    }
-    /**
-     * 右平衡,负责右树的平衡,先进行次级根树的右旋转,然后对根节点进行左旋转
-     * @param root
-     * */
-    public AvlNode rightBalance(AvlNode root){
-        AvlNode sRoot = root.right;
-        sRoot = rightRotate(sRoot);
-        root.right = sRoot;
-        sRoot.parent = root;
-        //对root进行左旋转
-        root = leftRotate(root);
-        return root;
-    }
+    }*/
     /**
      * 需要进行旋转的最小树,进行右旋转
      * @param root
@@ -270,14 +240,59 @@ public class AvlNode extends Node{
         }
         return values;
     }
+    /**
+    * 放入元素
+    * */
+    public AvlNode add(Integer value, AvlNode root){
+        AvlNode x = new AvlNode(value);
+        x.left = x.right = null;
+        if (root == null){
+            x.parent = null;
+            root = x;
+        }else {
+            int val = x.value;
+            int pv,dir;
+            //遍历root
+            for (AvlNode p = root;;){
+                //加左树
+                if ((pv = p.value) > val){
+                    dir = -1;
+                }//加右树
+                else if (pv < val){
+                    dir = 1;
+                }//如果相等则进行其他比较
+                else {
+                    dir = 0;
+                }
+                AvlNode xp = p;
+                if ((p = (dir <= 0) ? p.left:p.right)==null){
+                    x.parent = xp;
+                    if (dir <= 0){
+                        xp.left = x;
+                    }else {
+                        xp.right = x;
+                    }
+                    //添加完成后进行平衡
+                    root = balancify(root, x);
+                    break;
+                }
+            }
+        }
+        return root;
+    }
     public static void main(String[] sargs) {
-        Integer[] args = new Integer[]{80,60,90,83,95,93,97,100,70};
-        AvlNode that = AvlNode.replacementTreeNode(args);
-        AvlNode result = AvlNode.treeify(that);
-        //前序查询
+        Integer[] args = new Integer[]{80,60,90,83,95,93,97,100,55};
+        AvlNode root = null;
+        for (Integer arg:args){
+            if (root==null){
+                root = new AvlNode(arg);
+                continue;
+            }
+            root = root.add(arg, root);
+        }
         List<Integer> values = new ArrayList<Integer>();
         //前序输出
-        front(result, values);
+        front(root, values);
         if (values != null && !values.isEmpty()){
             for (Integer value : values){
                 System.out.print(value+" ");
@@ -286,7 +301,7 @@ public class AvlNode extends Node{
         }
         //中序输出
         values.clear();
-        middle(result,values);
+        middle(root,values);
         if (values != null && !values.isEmpty()){
             for (Integer value : values){
                 System.out.print(value+" ");
@@ -295,7 +310,7 @@ public class AvlNode extends Node{
         }
         //后序输出
         values.clear();
-        back(result,values);
+        back(root,values);
         if (values != null && !values.isEmpty()){
             for (Integer value : values){
                 System.out.print(value+" ");
