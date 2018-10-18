@@ -15,6 +15,9 @@ public class AvlNode{
     AvlNode right;
     Integer value;
 
+    public AvlNode() {
+    }
+
     public AvlNode(Integer value) {
         this.value = value;
     }
@@ -28,29 +31,7 @@ public class AvlNode{
             r = p;
         }
     }
-    /**
-     * 想要构建二叉树首先要构建一个链表
-     * 数组转链表
-     * */
-    static AvlNode replacementTreeNode(Integer[] args){
-        if (args == null || args.length==0){
-            return null;
-        }
-        AvlNode hd=null,tl=null;
-        for (Integer ir : args){
-            AvlNode p = newAvlNode(ir, null);
-            if (tl == null){
-                hd = p;
-            }else {
-                //p.prev = tl;
-                //tl.next = p;
-            }
-            tl = p;
-        }
-        return hd;
-    }
-
-    private static AvlNode newAvlNode(Integer value, AvlNode next) {
+    public static AvlNode newAvlNode(Integer value) {
         return new AvlNode(value);
     }
 
@@ -71,6 +52,7 @@ public class AvlNode{
             }else {
                 int value = x.value;
                 int pv,dir;
+
                 //遍历root
                 for (AvlNode p = root;;){
                     //加左树
@@ -104,7 +86,7 @@ public class AvlNode{
      * 需要进行旋转的最小树,进行右旋转
      * @param root
      * */
-    public static AvlNode rightRotate(AvlNode root){
+    public AvlNode rightRotate(AvlNode root){
         AvlNode x = root,xp=root,xl=x.left;
         if (xl.right!=null){
             xp.left = xl.right;
@@ -117,7 +99,7 @@ public class AvlNode{
      * 需要进行旋转的最小树,进行左旋转
      * @param root
      * */
-    public static AvlNode leftRotate(AvlNode root){
+    public AvlNode leftRotate(AvlNode root){
         AvlNode x = root, xp = root, xr = x.right;
         if (xr.left!=null){
             xp.right = xr.left;
@@ -149,7 +131,7 @@ public class AvlNode{
      * 如果执行单左旋或者单右旋时,只需要执行leftRotate和rightRotate.
      * 如果是另外两种情况就需要找到最大旋转单元
      * */
-    static AvlNode balancify(AvlNode root, AvlNode xp){
+    AvlNode balancify(AvlNode root, AvlNode xp){
         //检查root的左右树差
         if (root == null || xp == null){
             return null;
@@ -244,6 +226,10 @@ public class AvlNode{
     * 放入元素
     * */
     public AvlNode add(Integer value, AvlNode root){
+        //允许使用默认构造函数,直接调用
+        if (root.value == null){
+            root = null;
+        }
         AvlNode x = new AvlNode(value);
         x.left = x.right = null;
         if (root == null){
@@ -282,12 +268,8 @@ public class AvlNode{
     }
     public static void main(String[] sargs) {
         Integer[] args = new Integer[]{80,60,90,83,95,93,97,100,55};
-        AvlNode root = null;
+        AvlNode root = new AvlNode();
         for (Integer arg:args){
-            if (root==null){
-                root = new AvlNode(arg);
-                continue;
-            }
             root = root.add(arg, root);
         }
         List<Integer> values = new ArrayList<Integer>();
