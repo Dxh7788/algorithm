@@ -174,53 +174,32 @@ public class AvlNode{
     /**
      * 中序输出
      * */
-    public static List<Integer> middle(AvlNode root, List<Integer> values){
-        if (root.left==null && root.right ==null){
+    public static void middle(AvlNode root, List<Integer> values){
+        if (root!=null){
+            middle(root.left,values);
             values.add(root.value);
-            return values;
-        }
-        if ( root.left != null ){
-            middle(root.left, values);
-        }
-        values.add(root.value);
-        if (root.right != null){
             middle(root.right, values);
         }
-        return values;
     }
     /**
      * 后序输出
      * */
-    public static List<Integer> back(AvlNode root, List<Integer> values){
-        if (root.left==null && root.right ==null){
-            values.add(root.value);
-            return values;
-        }
-        if ( root.left != null ){
+    public static void back(AvlNode root, List<Integer> values){
+        if (root != null){
             back(root.left, values);
-        }
-        if (root.right != null){
             back(root.right, values);
+            values.add(root.value);
         }
-        values.add(root.value);
-        return values;
     }
     /**
      * 后序输出
      * */
-    public static List<Integer> front(AvlNode root, List<Integer> values){
-        if (root.left==null && root.right ==null){
+    public static void front(AvlNode root, List<Integer> values){
+        if (root!=null) {
             values.add(root.value);
-            return values;
-        }
-        values.add(root.value);
-        if ( root.left != null ){
             front(root.left, values);
-        }
-        if (root.right != null){
             front(root.right, values);
         }
-        return values;
     }
     /**
     * 放入元素
