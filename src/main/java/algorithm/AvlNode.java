@@ -4,6 +4,7 @@ package algorithm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * @author dongxiaohong on 2018/10/16 11:32
@@ -91,8 +92,8 @@ public class AvlNode{
         if (xl.right!=null){
             xp.left = xl.right;
             xl.right = xp;
+            xp.parent = xl;
         }
-        xp.parent = xl;
         return xl;
     }
     /**
@@ -104,8 +105,8 @@ public class AvlNode{
         if (xr.left!=null){
             xp.right = xr.left;
             xr.left = xp;
+            xp.parent = xr;
         }
-        xp.parent = xr;
         return xr;
     }
     /**
@@ -114,7 +115,7 @@ public class AvlNode{
      * */
     public static int deepth(AvlNode root){
         if (root==null){
-            return 0;
+            return -1;
         }
         int deepth = 0;
         if (root.right!=null || root.left!=null){
@@ -168,6 +169,7 @@ public class AvlNode{
             }
         }
         //没有失衡,则直接返回root
+        root.parent = null;
         return root;
     }
 
@@ -209,7 +211,7 @@ public class AvlNode{
         if (root.value == null){
             root = null;
         }
-        AvlNode x = new AvlNode(value);
+        AvlNode x = newAvlNode(value);
         x.left = x.right = null;
         if (root == null){
             x.parent = null;
@@ -244,5 +246,100 @@ public class AvlNode{
             }
         }
         return root;
+    }
+    /**
+     * 循右子树查找最小节点.
+     * */
+    public AvlNode minRightAvlNode(AvlNode root){
+        AvlNode xr,xl = root.left,xxr =null,xxl=null;
+        if ((xr = root.right)==null && (xl=root.left) == null){
+            return root;
+        }
+        if (xl != null){
+            return minRightAvlNode(xl);
+        }else {
+            AvlNode nxr = minRightAvlNode(xr);
+            if (nxr.value>root.value){
+                return root;
+            }else {
+                return nxr;
+            }
+        }
+    }
+    /**
+     * 找到新的子树
+     * */
+    public AvlNode replaceAvlNode(AvlNode node){
+        if (node.left== null && node.right == null){
+            //做一次平衡
+            AvlNode np = node.parent.parent;
+            int dir = 0;
+            if (np.left == node.parent){
+                dir = -1;
+            }else if (np.right == node.parent){
+                dir = 1;
+            }
+            if (node.parent.left == node){
+                node.parent.left = null;
+            }
+            if (node.parent.right == node){
+                node.parent.right = null;
+            }
+            node = balancify(node.parent,node.parent);
+            if (dir == -1){
+                np.left = node;
+            }else if (dir==-1){
+                np.right = node;
+            }
+            return null;
+        }else if (node.left != null && node.right == null){
+            return node.left;
+        }else if (node.left == null && node.right != null){
+            return node.right;
+        }else {
+            AvlNode tp = minRightAvlNode(node.right);
+            AvlNode tpp = tp.parent;
+            if (tpp.left == tp){
+                tpp.left = null;
+            }
+            if (tpp.right == tp){
+                tp.left = tpp.left;
+            }
+            tp.parent = node.parent;
+            return tp;
+        }
+    }
+    public AvlNode remove(Integer value){
+        for (AvlNode ro =this,rnv,rvp;;){
+            int dir;
+            if (ro.value>value){
+                dir = -1;
+            }else if (ro.value<value){
+                dir = 1;
+            }else {
+                //找到元素后
+                rvp = ro.parent;
+                int dirr = 0;
+                if (rvp.right == ro){
+                    dirr = -1;
+                }else if (rvp.left == ro){
+                    dirr = 1;
+                }
+                rnv = replaceAvlNode(ro);
+                if (dirr ==1){
+                    rvp.left = rnv;
+                }else if (dirr == -1){
+                    rvp.right = rnv;
+                }
+                if (rnv!=null) {
+                    rnv.parent = rvp;
+                }
+                ro.parent = ro.left = ro.right = null;
+                return ro;
+            }
+            if((ro = dir<=0?ro.left:ro.right) == null){
+                return null;
+            }
+        }
     }
 }

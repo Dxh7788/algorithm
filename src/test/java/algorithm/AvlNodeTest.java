@@ -39,5 +39,11 @@ public class AvlNodeTest {
                 System.out.print(value+" ");
             }
         }
+        //找到右子树最小值
+        //AvlNode node = root.minRightAvlNode(root.right);
+        //AvlNode node = root.replaceAvlNode(root.right);
+        AvlNode remove = root.remove(93);
+        //System.out.println(node.value);
+        System.out.println(remove!=null?remove.value:"");
     }
 }
